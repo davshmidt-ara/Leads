@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+businesses/*/leads.db
+businesses/*/exports/
+.env
