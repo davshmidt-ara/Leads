@@ -10,7 +10,7 @@ from unittest import mock
 
 from leadgen import config, outreach, scoring, server
 from leadgen.db import Store
-from leadgen.sources import places, reddit
+from leadgen.sources import osm, places, reddit
 
 CFG = config.load("example")
 
@@ -45,6 +45,15 @@ class Tests(unittest.TestCase):
              mock.patch.object(places, "request_json", return_value=resp):
             out = list(places.collect(CFG, {"queries": ["cafe"]}))
         self.assertEqual(out[0]["company"], "Cafe")
+
+    def test_osm_adapter(self):
+        resp = {"elements": [{"type": "node", "id": 7, "tags": {"name": "Pizza", "contact:phone": "555", "website": "https://p.com"}}]}
+        with mock.patch.object(osm, "request_form_json", return_value=resp) as m:
+            out = list(osm.collect(CFG, {"area": "Austin", "searches": ["amenity=restaurant"]}))
+        self.assertEqual(out[0]["phone"], "555")
+        self.assertIn('"amenity"="restaurant"', m.call_args[0][1]["data"])
+        with self.assertRaises(ValueError):
+            list(osm.collect(CFG, {"area": 'x"];bad', "searches": ["a=b"]}))
 
     def test_reddit_adapter(self):
         resp = {"data": {"children": [{"data": {"author": "u", "permalink": "/r/a/1", "title": "t"}}]}}

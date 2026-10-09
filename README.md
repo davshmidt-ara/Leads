@@ -4,7 +4,7 @@ A reusable lead-generation system: one codebase, one config folder per business.
 
 ```
 leadgen/                 toolkit (stdlib only, Python 3.9+)
-  sources/               places (Google Maps), apollo (B2B people), reddit (intent posts)
+  sources/               osm (free, no key), places (Google Maps), apollo (B2B people), reddit (intent posts)
   server.py              inbound landing page + form endpoint + dashboard
 businesses/<slug>/       business.json (+ leads.db, exports/ - gitignored)
 .claude/skills/leadgen/  Claude skill that drives the workflow

@@ -11,7 +11,7 @@ The toolkit lives in `leadgen/` (stdlib-only Python). Each business is one folde
 1. Interview the user (ask only what's missing): what they sell, who buys (titles, industries, company size, region), best customers today, what a buyer says when they need it (intent phrases), price/offer, the one call-to-action, sender name.
 2. `python -m leadgen new <slug>` then edit `businesses/<slug>/business.json`:
    - `icp` drives scoring: `titles`, `keywords_include/exclude`, `locations`, `intent_phrases`.
-   - `sources` enables channels (omit a key to disable): `places` (needs `GOOGLE_PLACES_API_KEY`), `apollo` (needs `APOLLO_API_KEY`), `reddit` (no key).
+   - `sources` enables channels (omit a key to disable): `osm` (free, no key; start here), `places` (needs `GOOGLE_PLACES_API_KEY`), `apollo` (needs `APOLLO_API_KEY`), `reddit` (no key).
    - `outreach.templates` optionally overrides `email`/`dm`/`call`/`community` drafts; `landing` configures the inbound page.
 3. Never commit API keys; use env vars.
 

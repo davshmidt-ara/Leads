@@ -12,6 +12,7 @@
     "intent_phrases": ["looking for a bookkeeper", "need an accountant", "bookkeeping help"]
   },
   "sources": {
+    "osm": {"area": "Austin", "searches": ["amenity=restaurant", "craft=plumber"], "limit": 100},
     "places": {"queries": ["restaurant in Austin TX", "contractor in Austin TX"], "max_per_query": 40},
     "apollo": {"titles": ["Owner", "Founder"], "locations": ["Texas, United States"], "employee_ranges": ["1,50"], "pages": 2},
     "reddit": {"subreddits": ["smallbusiness", "Entrepreneur"], "queries": ["looking for a bookkeeper", "need an accountant"], "limit": 25}

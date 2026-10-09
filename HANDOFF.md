@@ -19,5 +19,5 @@ Read this first in a new session, then README.md and .claude/skills/leadgen/SKIL
    - `GOOGLE_PLACES_API_KEY`. A card is needed for a billing account; a free monthly allowance applies.
    - `APOLLO_API_KEY`. The user pasted an old key in chat, so it must be rotated. The free plan may not allow the people-search API; the fallback is a CSV export from Apollo's UI plus `python -m leadgen import <slug> file.csv`.
 3. The user wants Claude in Chrome to create the keys. This needs a session that runs on their computer (Claude Desktop app, or `claude remote-control`) with the Claude in Chrome extension installed.
-4. Offered but not built: a free OpenStreetMap (Overpass) source that needs no key.
+4. DONE: free OpenStreetMap source (`leadgen/sources/osm.py`, mocked test only; verify live from an unrestricted network).
 5. Verify the Apollo endpoint/params (`mixed_people/api_search`) against Apollo's current docs on first live run.
