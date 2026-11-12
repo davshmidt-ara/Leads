@@ -5,27 +5,111 @@
     "cta": "Open to a 15-minute call this week?"
   },
   "icp": {
-    "titles": ["Owner", "Founder", "Managing Director"],
-    "keywords_include": ["restaurant", "contractor", "clinic", "agency"],
-    "keywords_exclude": ["franchise", "non-profit"],
-    "locations": ["Austin", "Texas"],
-    "intent_phrases": ["looking for a bookkeeper", "need an accountant", "bookkeeping help"]
+    "titles": [
+      "Owner",
+      "Founder",
+      "Managing Director"
+    ],
+    "keywords_include": [
+      "clinic",
+      "agency",
+      "family owned"
+    ],
+    "keywords_exclude": [
+      "franchise",
+      "non-profit"
+    ],
+    "locations": [
+      "Austin",
+      "Texas"
+    ],
+    "intent_phrases": [
+      "looking for a bookkeeper",
+      "need an accountant",
+      "bookkeeping help"
+    ],
+    "segments": [
+      {
+        "name": "restaurants",
+        "weight": 20,
+        "keywords": [
+          "restaurant",
+          "cafe",
+          "bar"
+        ],
+        "pitch": "Restaurant owners tell us month-end books eat their only day off. We close your books by the 5th for a flat monthly fee."
+      },
+      {
+        "name": "trades",
+        "weight": 15,
+        "keywords": [
+          "contractor",
+          "plumber",
+          "electrician",
+          "roofing"
+        ],
+        "pitch": "We handle job costing and bookkeeping for trades businesses for a flat monthly fee, so you know which jobs actually made money."
+      }
+    ]
   },
   "sources": {
-    "osm": {"area": "Austin", "searches": ["amenity=restaurant", "craft=plumber"], "limit": 100},
-    "places": {"queries": ["restaurant in Austin TX", "contractor in Austin TX"], "max_per_query": 40},
-    "apollo": {"titles": ["Owner", "Founder"], "locations": ["Texas, United States"], "employee_ranges": ["1,50"], "pages": 2},
-    "reddit": {"subreddits": ["smallbusiness", "Entrepreneur"], "queries": ["looking for a bookkeeper", "need an accountant"], "limit": 25}
+    "osm": {
+      "area": "Austin",
+      "searches": [
+        "amenity=restaurant",
+        "craft=plumber"
+      ],
+      "limit": 100
+    },
+    "places": {
+      "queries": [
+        "restaurant in Austin TX",
+        "contractor in Austin TX"
+      ],
+      "max_per_query": 40
+    },
+    "apollo": {
+      "titles": [
+        "Owner",
+        "Founder"
+      ],
+      "locations": [
+        "Texas, United States"
+      ],
+      "employee_ranges": [
+        "1,50"
+      ],
+      "pages": 2
+    },
+    "reddit": {
+      "subreddits": [
+        "smallbusiness",
+        "Entrepreneur"
+      ],
+      "queries": [
+        "looking for a bookkeeper",
+        "need an accountant"
+      ],
+      "limit": 25
+    }
   },
   "scoring": {},
   "outreach": {
     "sender": "Alex, Example Bookkeeping Co",
-    "templates": {}
+    "templates": {},
+    "followup_days": [
+      3,
+      7
+    ]
   },
   "landing": {
     "headline": "Bookkeeping done for you",
     "subhead": "Flat monthly fee. Books closed by the 5th. No spreadsheets.",
-    "bullets": ["Free 15-minute books review", "No contract", "QuickBooks / Xero"],
+    "bullets": [
+      "Free 15-minute books review",
+      "No contract",
+      "QuickBooks / Xero"
+    ],
     "button": "Book my free review",
     "consent": "By submitting you agree to be contacted about this request.",
     "thanks": "Thanks - we'll be in touch within one business day."

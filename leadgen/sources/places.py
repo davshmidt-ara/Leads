@@ -7,7 +7,8 @@ from ._http import request_json
 
 URL = "https://places.googleapis.com/v1/places:searchText"
 MASK = ("places.displayName,places.formattedAddress,places.nationalPhoneNumber,"
-        "places.websiteUri,places.googleMapsUri,places.rating,places.userRatingCount,nextPageToken")
+        "places.websiteUri,places.googleMapsUri,places.rating,places.userRatingCount,"
+        "places.businessStatus,places.primaryTypeDisplayName,nextPageToken")
 
 
 def collect(cfg, sc):
@@ -21,6 +22,9 @@ def collect(cfg, sc):
             resp = request_json(URL, "POST", {"X-Goog-Api-Key": key, "X-Goog-FieldMask": MASK}, body)
             for p in resp.get("places", []):
                 got += 1
+                if p.get("businessStatus", "OPERATIONAL") != "OPERATIONAL":
+                    continue
+                kind = (p.get("primaryTypeDisplayName") or {}).get("text") or ""
                 rating = f"{p.get('rating')} stars / {p.get('userRatingCount')} reviews" if p.get("rating") else ""
                 yield {
                     "company": (p.get("displayName") or {}).get("text"),
@@ -30,7 +34,7 @@ def collect(cfg, sc):
                     "location": p.get("formattedAddress"),
                     "url": p.get("googleMapsUri"),
                     "signal": f"Found via '{query}'",
-                    "notes": rating,
+                    "notes": "; ".join(filter(None, [kind, rating])),
                 }
             token = resp.get("nextPageToken")
             if not token:

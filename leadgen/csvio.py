@@ -32,7 +32,9 @@ def read_rows(path):
 
 
 def write(path, leads):
-    cols = ["id", "score", "status", "source", *FIELDS, "draft", "created_at"]
+    """Export, including mail-merge helpers (tier, channel, first_name) when the caller adds them."""
+    cols = ["id", "score", "tier", "segment", "status", "touches", "source", "channel", "first_name",
+            *FIELDS, "draft"]
     with open(path, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
         w.writeheader()

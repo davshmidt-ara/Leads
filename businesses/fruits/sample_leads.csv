@@ -1,0 +1,17 @@
+Name,Company,Title,Email,Phone,Website,Location,Notes
+,Green Press Juice Bar (SAMPLE),,hello@greenpress.example,512-555-0101,https://greenpress.example,"South Congress, Austin TX",cold-pressed juice and smoothie bar; organic
+,Green Press Juice Bar (SAMPLE),,,(512) 555-0101,www.greenpress.example/menu,Austin TX,duplicate row from another list
+,Acai Republic (SAMPLE),,,512-555-0102,https://acairepublic.example,"East 6th, Austin TX",acai bowls and smoothies
+,Morning Bell Cafe (SAMPLE),,,512-555-0103,https://morningbell.example,"Hyde Park, Austin TX",independent cafe; brunch; fresh pastries
+,Lark & Loaf Bakery (SAMPLE),,orders@larkandloaf.example,512-555-0104,https://larkandloaf.example,"Mueller, Austin TX",bakery with fruit tarts
+,Casa Verde Taqueria (SAMPLE),,,512-555-0105,,"Riverside, Austin TX",restaurant; aguas frescas
+,The Lakeline Hotel (SAMPLE),,,512-555-0106,https://lakelinehotel.example,Cedar Park TX,boutique hotel with breakfast buffet and events
+Priya Nair,The Lakeline Hotel (SAMPLE),Food and Beverage Director,priya.nair@lakelinehotel.example,,https://lakelinehotel.example,Cedar Park TX,
+,Hill Country Catering Co (SAMPLE),,events@hccatering.example,512-555-0107,https://hccatering.example,Round Rock TX,catering for weddings and corporate events
+,Barton Corner Grocer (SAMPLE),,,512-555-0108,https://bartongrocer.example,"Zilker, Austin TX",independent grocer and deli
+Dana Whitfield,Brightline Software (SAMPLE),Office Manager,dana.whitfield@brightline.example,512-555-0109,https://brightline.example,Austin TX,120-person office; workplace perks
+,Little Oaks Daycare (SAMPLE),,director@littleoaks.example,512-555-0110,https://littleoaks.example,Pflugerville TX,daycare with snack program
+,Iron Peak Fitness (SAMPLE),,,512-555-0111,https://ironpeak.example,Austin TX,gym and yoga studio
+,Lone Star Wholesale Produce (SAMPLE),,sales@lonestarproduce.example,512-555-0112,https://lonestarproduce.example,Austin TX,wholesale produce distributor - competitor
+,Sip Smoothie Truck (SAMPLE),,,,https://instagram.com/sipsmoothietruck,Austin TX,smoothie food truck
+,Peel Juice Co (SAMPLE),,,,https://instagram.com/peeljuiceco,Austin TX,juice stand

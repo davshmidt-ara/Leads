@@ -10,22 +10,26 @@ import hmac
 import html
 import json
 import os
+import re
+import time
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from . import config, scoring
-from .db import STATUSES, Store
+from . import config, outreach, scoring
+from .db import STATUSES, Store, display_name
 
 e = html.escape
 MAX_BODY = 20_000
+EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]{2,}$")
+RATE = (5, 600)  # max form posts per IP per window (seconds)
 
 
 def page(title, body):
     return (f"<!doctype html><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'>"
-            f"<title>{e(title)}</title><style>body{{font:16px/1.5 system-ui;max-width:42rem;margin:2rem auto;padding:0 1rem}}"
+            f"<title>{e(title)}</title><style>body{{font:16px/1.5 system-ui;max-width:60rem;margin:2rem auto;padding:0 1rem}}"
             f"input,textarea,select,button{{font:inherit;padding:.5rem;margin:.25rem 0;width:100%;box-sizing:border-box}}"
             f"table{{border-collapse:collapse;width:100%;font-size:14px}}td,th{{border-bottom:1px solid #ddd;padding:.3rem;text-align:left;vertical-align:top}}"
-            f"button{{cursor:pointer}}.hot{{color:#b00020;font-weight:700}}.warm{{color:#b26a00}}</style>{body}")
+            f"button{{cursor:pointer}}.hot{{color:#b00020;font-weight:700}}pre{{white-space:pre-wrap;font-size:13px}}form{{max-width:36rem}}td select{{min-width:9.5rem}}.warm{{color:#b26a00}}</style>{body}")
 
 
 def landing_html(cfg, utm):
@@ -46,6 +50,13 @@ def make_handler(slug):
     cfg = config.load(slug)
     store_path = config.db_path(slug)
     token = os.environ.get("LEADGEN_ADMIN_TOKEN", "")
+    hits = {}
+
+    def limited(ip):
+        now = time.time()
+        recent = [t for t in hits.get(ip, []) if now - t < RATE[1]]
+        hits[ip] = recent + [now]
+        return len(recent) >= RATE[0]
 
     class H(BaseHTTPRequestHandler):
         def _send(self, code, body, ctype="text/html; charset=utf-8", headers=()):
@@ -98,7 +109,9 @@ def make_handler(slug):
             if u.path == "/lead":
                 if g("website_url"):  # honeypot tripped
                     return self._send(200, page("Thanks", "<h1>Thanks!</h1>"))
-                if "@" not in g("email") or not g("name"):
+                if limited(self.client_address[0]):
+                    return self._send(429, page("Slow down", "<p>Too many submissions. Please try again later.</p>"))
+                if not EMAIL_RE.match(g("email")) or not g("name"):
                     return self._send(400, page("Error", "<p>Name and a valid email are required.</p>"))
                 utm = ", ".join(f"{k}={g(k)}" for k in form if k.startswith("utm_"))
                 store = Store(store_path)
@@ -113,7 +126,7 @@ def make_handler(slug):
                     return self._send(403, "Forbidden")
                 if g("status") in STATUSES and g("id").isdigit():
                     st = Store(store_path)
-                    st.update(int(g("id")), status=g("status"))
+                    st.mark(int(g("id")), g("status"))
                     st.conn.close()
                 return self._send(303, "", headers=[("Location", f"/admin?token={urllib.parse.quote(token)}")])
             self._send(404, "Not found")
@@ -125,16 +138,22 @@ def make_handler(slug):
             for l in store.all(limit=300):
                 opts = "".join(f"<option{' selected' if s == l['status'] else ''}>{s}</option>" for s in STATUSES)
                 t = scoring.tier(l["score"], cfg)
-                who = e(l["name"] or l["company"] or "")
+                who = e(display_name(l))
                 link = f"<a href='{e(l['url'])}' rel=noreferrer>{who}</a>" if (l["url"] or "").startswith("http") else who
-                rows += (f"<tr><td class={t}>{l['score']}</td><td>{link}<br><small>{e(l['company'] or '')} {e(l['title'] or '')}</small></td>"
+                due = " <b>follow-up due</b>" if outreach.is_due(l, cfg) else ""
+                draft = (f"<details><summary>draft</summary><pre>{e(l['draft'])}</pre></details>" if l["draft"] else "")
+                rows += (f"<tr><td class={t}>{l['score']}</td><td>{link}<br><small>{e(l['title'] or '')} {e(l['segment'] or '')}</small>{draft}</td>"
                          f"<td>{e(l['email'] or '')}<br>{e(l['phone'] or '')}</td><td>{e(l['source'])}</td>"
                          f"<td><small>{e((l['signal'] or '')[:120])}</small></td>"
                          f"<td><form method=post action=/admin/status><input type=hidden name=token value='{e(token)}'>"
-                         f"<input type=hidden name=id value={l['id']}><select name=status onchange=this.form.submit()>{opts}</select></form></td></tr>")
+                         f"<input type=hidden name=id value={l['id']}><select name=status onchange=this.form.submit()>{opts}</select></form>"
+                         f"<small>touches: {l['touches']}{due}</small></td></tr>")
+            funnel = "".join(f"<tr><td>{e(str(r['grp']))}<td>{r['leads']}<td>{r['contacted']}<td>{r['replied']}<td>{r['won']}<td>{r['reply_rate']}</tr>"
+                             for r in store.report("source"))
             store.conn.close()
             return page(f"{cfg['name']} leads",
-                        f"<h1>{e(cfg['name'])} - {st['total']} leads</h1><p>{e(json.dumps(st['by_source']))} {e(json.dumps(st['by_status']))}</p>"
+                        f"<h1>{e(cfg['name'])} - {st['total']} leads</h1>"
+                        f"<table><tr><th>Source<th>Leads<th>Contacted<th>Replied<th>Won<th>Reply rate</tr>{funnel}</table><br>"
                         f"<table><tr><th>Score<th>Lead<th>Contact<th>Source<th>Signal<th>Status</tr>{rows}</table>")
 
         def log_message(self, *a):

@@ -1,9 +1,26 @@
 """Transparent rule-based lead scoring driven by the business's ICP + scoring weights."""
+import re
 
 
 def _text(lead):
     return " ".join(str(lead.get(k) or "") for k in
                     ("name", "company", "title", "website", "location", "signal", "notes")).lower()
+
+
+def has(term, text):
+    """Whole-word match (plural tolerant): 'bar' matches 'bars' but not 'barber'."""
+    return re.search(r"(?<!\w)" + re.escape(term.lower()) + r"(?:s|es)?(?!\w)", text) is not None
+
+
+def segment_for(lead, cfg):
+    """Best-weighted ICP segment whose keywords match the lead, or None."""
+    text = _text(lead)
+    best = None
+    for seg in cfg["icp"].get("segments", []):
+        if any(has(k, text) for k in seg.get("keywords", [])):
+            if best is None or seg.get("weight", 0) > best.get("weight", 0):
+                best = seg
+    return best
 
 
 def score(lead, cfg):
@@ -16,9 +33,12 @@ def score(lead, cfg):
         s += w["has_phone"]
     if lead.get("website"):
         s += w["has_website"]
-    if any(t.lower() in (lead.get("title") or "").lower() for t in icp.get("titles", [])):
+    if any(has(t, (lead.get("title") or "").lower()) for t in icp.get("titles", [])):
         s += w["title_match"]
-    kw = sum(1 for k in icp.get("keywords_include", []) if k.lower() in text)
+    seg = segment_for(lead, cfg)
+    if seg:
+        s += seg.get("weight", 0)
+    kw = sum(1 for k in icp.get("keywords_include", []) if has(k, text))
     s += min(kw * w["keyword_match"], w["keyword_cap"])
     if any(loc.lower() in (lead.get("location") or "").lower() for loc in icp.get("locations", [])):
         s += w["location_match"]
@@ -26,7 +46,7 @@ def score(lead, cfg):
     s += min(hits * w["intent_phrase"], w["intent_cap"])
     if lead.get("source") == "inbound":
         s += w["inbound_bonus"]
-    if any(k.lower() in text for k in icp.get("keywords_exclude", [])):
+    if any(has(k, text) for k in icp.get("keywords_exclude", [])):
         s -= w["exclude_penalty"]
     return max(0, min(100, s))
 
@@ -40,7 +60,9 @@ def score_all(store, cfg):
     n = 0
     for lead in store.all():
         new = score(lead, cfg)
-        if new != lead["score"]:
-            store.update(lead["id"], score=new)
+        seg = segment_for(lead, cfg)
+        seg = seg["name"] if seg else None
+        if new != lead["score"] or seg != lead["segment"]:
+            store.update(lead["id"], score=new, segment=seg)
             n += 1
     return n
