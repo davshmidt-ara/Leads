@@ -46,8 +46,12 @@ def landing_html(cfg, utm):
 <small>{e(l.get('consent', 'By submitting you agree to be contacted about this request.'))}</small></form>""")
 
 
-def make_handler(slug):
+def make_handler(slug, open_app=False, home="landing"):
+    """open_app: serve the interactive app without a password (own computer only).
+    home: what "/" shows - the public "landing" page or the "app"."""
+    from .app import PAGE, ApiError, App
     cfg = config.load(slug)
+    app = App(slug)
     store_path = config.db_path(slug)
     token = os.environ.get("LEADGEN_ADMIN_TOKEN", "")
     hits = {}
@@ -76,6 +80,42 @@ def make_handler(slug):
             given = (qs.get("token") or (form or {}).get("token") or [""])[0]
             return hmac.compare_digest(given, token)
 
+        def _app_ok(self, qs):
+            if open_app:
+                return True
+            given = self.headers.get("X-Token") or (qs.get("token") or [""])[0]
+            return bool(token) and hmac.compare_digest(given, token)
+
+        def _json(self, code, obj):
+            self._send(code, json.dumps(obj, default=str), "application/json")
+
+        def _api(self, method, name, qs):
+            if not self._app_ok(qs):
+                return self._json(403, {"error": "Not allowed. Open the app with its ?token= link."})
+            try:
+                if method == "GET" and name == "export.csv":
+                    return self._send(200, app.export_csv(qs), "text/csv; charset=utf-8",
+                                      [("Content-Disposition", f'attachment; filename="{slug}-leads.csv"')])
+                table = App.GET if method == "GET" else App.POST
+                if name not in table:
+                    return self._json(404, {"error": "Unknown action."})
+                if method == "POST":
+                    if self.headers.get("X-Leadgen") != "1":      # blocks cross-site form posts
+                        return self._json(403, {"error": "Not allowed."})
+                    n = int(self.headers.get("Content-Length") or 0)
+                    if n > 200_000:
+                        return self._json(413, {"error": "Too large."})
+                    arg = json.loads(self.rfile.read(n).decode("utf-8") or "{}")
+                    if not isinstance(arg, dict):
+                        raise ApiError("Bad request.")
+                else:
+                    arg = qs
+                return self._json(200, table[name](app, arg))
+            except ApiError as ex:
+                return self._json(ex.code, {"error": str(ex)})
+            except (ValueError, OSError) as ex:
+                return self._json(400, {"error": str(ex)})
+
         def _body(self):
             n = int(self.headers.get("Content-Length") or 0)
             if n > MAX_BODY:
@@ -88,7 +128,13 @@ def make_handler(slug):
         def do_GET(self):
             u = urllib.parse.urlparse(self.path)
             qs = urllib.parse.parse_qs(u.query)
-            if u.path == "/":
+            if u.path.startswith("/api/"):
+                return self._api("GET", u.path[5:], qs)
+            if u.path == "/app" or (u.path == "/" and home == "app"):
+                if not self._app_ok(qs):
+                    return self._send(403, "Forbidden (open the app with its ?token= link)")
+                return self._send(200, PAGE, headers=[("Cache-Control", "no-store")])
+            if u.path in ("/", "/landing"):
                 utm = {k: v[0][:100] for k, v in qs.items() if k.startswith("utm_")}
                 return self._send(200, landing_html(cfg, utm))
             if u.path == "/admin":
@@ -99,6 +145,8 @@ def make_handler(slug):
 
         def do_POST(self):
             u = urllib.parse.urlparse(self.path)
+            if u.path.startswith("/api/"):
+                return self._api("POST", u.path[5:], urllib.parse.parse_qs(u.query))
             try:
                 form = self._body()
             except ValueError:
@@ -162,6 +210,15 @@ def make_handler(slug):
     return H
 
 
-def serve(slug, host="127.0.0.1", port=8000):
-    print(f"Serving {slug} on http://{host}:{port}  (admin: {'enabled' if os.environ.get('LEADGEN_ADMIN_TOKEN') else 'disabled - set LEADGEN_ADMIN_TOKEN'})")
-    ThreadingHTTPServer((host, port), make_handler(slug)).serve_forever()
+def serve(slug, host="127.0.0.1", port=8000, open_app=False, home="landing"):
+    token = os.environ.get("LEADGEN_ADMIN_TOKEN", "")
+    if open_app and host not in ("127.0.0.1", "localhost", "::1"):
+        raise SystemExit("The app without a password only runs on 127.0.0.1. Set LEADGEN_ADMIN_TOKEN to expose it.")
+    base = f"http://{host}:{port}"
+    if home == "app":
+        print(f"Lead Finder for {slug}: {base}/" + ("" if open_app else f"?token={token}"))
+        print(f"Public landing page: {base}/landing")
+    else:
+        print(f"Landing page: {base}/   App: {base}/app?token=...   Dashboard: {base}/admin?token=...  "
+              f"({'enabled' if token else 'disabled - set LEADGEN_ADMIN_TOKEN'})")
+    ThreadingHTTPServer((host, port), make_handler(slug, open_app, home)).serve_forever()

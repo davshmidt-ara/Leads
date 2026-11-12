@@ -53,6 +53,22 @@
     ]
   },
   "sources": {
+    "overture": {
+      "around": [
+        30.2672,
+        -97.7431,
+        15000
+      ],
+      "categories": [
+        "restaurant",
+        "contractor",
+        "dental_clinic"
+      ],
+      "min_confidence": 0.7,
+      "skip_chains": true,
+      "per_category": 150,
+      "limit": 1000
+    },
     "osm": {
       "area": "Austin",
       "searches": [

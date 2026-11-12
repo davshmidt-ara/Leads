@@ -29,6 +29,13 @@ Run every command from the repo root as `python -m leadgen <command> <slug>`.
    - `icp.titles`, `keywords_include`, `keywords_exclude` (competitors, chains, bad fits), `locations`,
      `intent_phrases` (what a buyer types when looking).
    - `sources`: remove a key to disable that source.
+     - `overture`: **start here.** Free, no key, worldwide: Overture Maps' open business directory
+       (name, category, address, phone, website, often email). Needs `pip install pyarrow`.
+       Set `around` to [lat, lon, radius_m] - you know city coordinates, or run
+       `python -m leadgen locate "<city>"`. Then run `python -m leadgen categories <slug> [text]` to see
+       which business types exist in that area and how many have an email, and put the wanted ones in
+       `categories` in priority order (wildcards like `*restaurant*` work; a parent such as `bar` matches
+       all its sub-types). `per_category` caps each type; `skip_chains` drops multi-location brands.
      - `osm`: free, no key. `area` (city name) or `around` ([lat, lon, radius_m], better for ambiguous
        names). `searches` are OpenStreetMap tags like `amenity=cafe`. `skip_chains` drops branded chains.
      - `places`: Google Places, needs `GOOGLE_PLACES_API_KEY`. Better phone and website coverage.
@@ -42,12 +49,24 @@ Run every command from the repo root as `python -m leadgen <command> <slug>`.
 ## 2. Build the list
 
 ```
-python -m leadgen collect <slug>                 # all enabled sources, deduped and scored
+python -m leadgen app <slug>                     # interactive: pick area + business types, click Find
+python -m leadgen collect <slug>                 # same from the command line: all enabled sources
 python -m leadgen import <slug> list.csv --source <label>   # any CSV: LinkedIn export, trade show list
 python -m leadgen enrich <slug> --min-score 40   # find emails on the leads' own websites
 ```
 The same business found in two sources is merged (matched on email, website, phone). `enrich` reads only
 each lead's own public site, honours robots.txt and pauses between sites; keep `--limit` modest.
+
+**The interactive app** (`python -m leadgen app <slug>`, then open the printed address) does the whole loop
+in a browser: choose where and what kind of business, find leads, see today's list, open a lead, edit its
+message, open it in the user's email app, and record what happened. Offer it to users who prefer clicking
+to commands. It has no password when started this way, so it only listens on the user's own computer.
+
+**Research by hand when a source is missing.** If the buyers are not in a directory (a niche B2B role,
+a new trend), use web search to find them - association member lists, "best X in <city>" articles, event
+exhibitor lists, people publicly asking for the product - and write what you find to a CSV with the columns
+`Name, Company, Title, Email, Phone, Website, Location, Notes`, then `import` it with a `--source` label
+naming where it came from. Record only details that are published; never guess an email address.
 
 ## 3. Work the leads every day
 
@@ -91,10 +110,12 @@ Update the planning numbers in `MARKET.md` with the real rates.
   re-imports cannot revive it. Keep the opt-out line in cold emails and follow CAN-SPAM, GDPR or CASL for
   the recipient's country.
 - **Communities:** reply helpfully and follow each community's self-promotion rules. Never auto-post.
-- **Data:** public business contact data only. LinkedIn scraping is not supported; use exports or a
+- **Data:** public business contact data only. Overture data is openly licensed; directory emails can be
+  out of date, so expect some bounces and remove them. LinkedIn scraping is not supported; use exports or a
   licensed provider.
 - **Be honest about verification.** `python -m unittest discover -s tests` covers the pipeline offline.
   A source is only proven once `doctor` reports it reachable and a `collect` returns real leads; say which
-  sources you have and have not seen work.
+  sources you have and have not seen work. Overture has been run live; the others had not been at the
+  time of writing.
 - **Sample data:** the fruit example's leads are fictional. Remove them with
   `python -m leadgen purge fruits --source sample` before real use.

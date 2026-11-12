@@ -66,8 +66,10 @@ That is what `offer` and the segment pitches in `business.json` say.
 
 ## 5. Lead-generation plan
 
-1. **Build the list** with `collect` (OpenStreetMap is free; Google Places adds phone/website coverage),
-   then `enrich` to pull emails from the businesses' own websites.
+1. **Build the list** with `collect` or the app. The free Overture source returned 1,196 Austin
+   businesses in the target categories on 12 Nov 2026 (790 with an email, 1,152 with a phone), including
+   122 juice and smoothie bars within 20 km. Then `enrich` to pull more emails from the businesses' own
+   websites.
 2. **Work the hot and warm tiers first** (`next`). Juice bars and caterers get a sample-box visit;
    everyone else gets the email or call script from `draft`.
 3. **Three touches, then stop**: day 0, day 3, day 10 (`followup_days: [3, 7]`). Mark outcomes with `mark`.

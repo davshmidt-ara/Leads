@@ -1,0 +1,1 @@
+pyarrow>=14   # optional: only the free Overture source needs it

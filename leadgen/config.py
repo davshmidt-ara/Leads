@@ -53,7 +53,7 @@ def load(slug):
     return cfg
 
 
-KNOWN_SOURCES = ("osm", "places", "apollo", "reddit")
+KNOWN_SOURCES = ("overture", "osm", "places", "apollo", "reddit")
 PLACEHOLDERS = {"first_name", "name", "company", "signal", "offer", "pitch", "cta", "sender", "business", "location"}
 SOURCE_KEYS = {"places": "GOOGLE_PLACES_API_KEY", "apollo": "APOLLO_API_KEY"}
 
@@ -81,6 +81,12 @@ def validate(cfg):
     osm = cfg["sources"].get("osm")
     if osm is not None and not (osm.get("area") or osm.get("around")):
         probs.append("sources.osm needs \"area\" or \"around\"")
+    ov = cfg["sources"].get("overture")
+    if ov is not None:
+        if not (ov.get("around") or ov.get("bbox")):
+            probs.append('sources.overture needs "around": [lat, lon, radius_m]')
+        if not ov.get("categories"):
+            probs.append("sources.overture needs \"categories\" (list them with: python -m leadgen categories <slug>)")
     tpls = dict(cfg.get("outreach", {}).get("templates", {}))
     for seg in icp.get("segments", []):
         tpls.update({f"{seg.get('name')}.{k}": v for k, v in seg.get("templates", {}).items()})

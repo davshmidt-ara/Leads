@@ -3,8 +3,9 @@
 A reusable lead-generation system: one codebase, one config folder per business.
 
 ```
-leadgen/                 toolkit (Python 3.9+, standard library only)
-  sources/               osm (free, no key), places (Google Maps), apollo (B2B people), reddit (intent posts)
+leadgen/                 toolkit (Python 3.9+; standard library, plus pyarrow for the Overture source)
+  sources/               overture (free, no key, worldwide), osm (free), places (Google Maps), apollo, reddit
+  app.py                 interactive Lead Finder (browser)
   enrich.py              finds emails on leads' own websites
   server.py              inbound landing page + form endpoint + dashboard
 businesses/<slug>/       business.json, MARKET.md (+ leads.db, exports/ - gitignored)
@@ -12,7 +13,24 @@ businesses/fruits/       worked example: fruit supplier, market overview, 16 fic
 .claude/skills/leadgen/  Claude skill that drives the workflow (plain Markdown; other agents can read it)
 ```
 
-## Try it in two minutes (no keys, no network)
+## Find real leads in two minutes (free, no keys)
+```
+pip install pyarrow                           # only extra package; needed for the free Overture source
+python -m leadgen app fruits                  # open http://127.0.0.1:8000
+```
+Set a latitude, longitude and radius, click "Show types in this area", pick business types, click
+"Find leads". The first search of an area downloads about 20-60 MB and takes about 30 seconds; after
+that the area is cached. Then work the "Today" tab: open a lead, edit the message, send it yourself,
+click "I sent it".
+
+The same from the command line:
+```
+python -m leadgen categories fruits juice     # business types in the configured area
+python -m leadgen collect fruits --source overture
+python -m leadgen draft fruits --min-score 40 && python -m leadgen next fruits
+```
+
+## Try it with sample data (no network at all)
 ```
 python -m leadgen import fruits businesses/fruits/sample_leads.csv --source sample
 python -m leadgen draft fruits --min-score 40
@@ -29,7 +47,9 @@ python -m leadgen purge fruits --source sample             # remove the fictiona
 python -m leadgen new acme                    # scaffold from businesses/example
 $EDITOR businesses/acme/business.json
 python -m leadgen doctor acme                 # config, keys and network check
-python -m leadgen collect acme                # OpenStreetMap works with no key
+python -m leadgen locate "Lyon, France"       # coordinates for sources.overture.around
+python -m leadgen categories acme             # pick business types for sources.overture.categories
+python -m leadgen collect acme                # Overture and OpenStreetMap need no key
 python -m leadgen enrich acme --min-score 40
 python -m leadgen draft acme --min-score 40 && python -m leadgen next acme
 ```
@@ -49,4 +69,6 @@ Create `leadgen/sources/<name>.py` with `collect(cfg, source_cfg)` yielding dict
 `name, company, title, email, phone, website, location, url, signal, notes`, register it in
 `sources/__init__.py` and add the name to `KNOWN_SOURCES` in `config.py`.
 
-Tests: `python -m unittest discover -s tests` (35 tests, offline).
+Tests: `python -m unittest discover -s tests` (48 tests, offline; the Overture tests need pyarrow).
+
+Data: Overture Maps places are published under CDLA-Permissive-2.0 (overturemaps.org).

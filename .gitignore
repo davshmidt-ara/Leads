@@ -3,3 +3,4 @@ __pycache__/
 businesses/*/leads.db
 businesses/*/exports/
 .env
+.cache/

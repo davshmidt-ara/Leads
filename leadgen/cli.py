@@ -11,7 +11,8 @@ from .db import STATUSES, Store, display_name
 from .sources import REGISTRY
 
 TEMPLATE = os.path.join(config.ROOT, "example", "business.json")
-PROBE = {"osm": "https://overpass-api.de/api/status", "places": "https://places.googleapis.com/",
+PROBE = {"overture": "https://overturemaps-us-west-2.s3.amazonaws.com/?list-type=2&prefix=release/&delimiter=/",
+         "osm": "https://overpass-api.de/api/status", "places": "https://places.googleapis.com/",
          "apollo": "https://api.apollo.io/", "reddit": "https://www.reddit.com/robots.txt"}
 
 
@@ -43,6 +44,13 @@ def cmd_doctor(cfg):
         if name not in REGISTRY:
             continue
         key = config.SOURCE_KEYS.get(name)
+        if name == "overture":
+            try:
+                import pyarrow  # noqa: F401
+            except ImportError:
+                print("  ! overture: needs pyarrow - run: pip install pyarrow")
+                ok = False
+                continue
         if key and not os.environ.get(key):
             print(f"  ! {name}: {key} is not set")
             ok = False
@@ -71,6 +79,8 @@ def main(argv=None):
     add("doctor", "check the config, API keys and network access")
     s = add("collect", "pull leads from the enabled sources, dedupe and score")
     s.add_argument("--source", choices=sorted(REGISTRY), help="only this source")
+    s = add("categories", "list the business types Overture has in your area (to fill sources.overture.categories)")
+    s.add_argument("text", nargs="?", default="", help="only types containing this text")
     s = add("import", "import a CSV of leads")
     s.add_argument("file")
     s.add_argument("--source", default="import", help="label for where the list came from")
@@ -96,12 +106,21 @@ def main(argv=None):
     s.add_argument("--by", choices=["source", "segment"], default="source")
     s = add("purge", "delete all leads from one source (e.g. the sample data)")
     s.add_argument("--source", required=True)
+    s = add("app", "open the interactive Lead Finder on this computer")
+    s.add_argument("--port", type=int, default=8000)
     s = add("serve", "run the landing page, lead form and dashboard")
     s.add_argument("--host", default="127.0.0.1")
     s.add_argument("--port", type=int, default=8000)
+    loc = sub.add_parser("locate", help="look up latitude/longitude for a place name")
+    loc.add_argument("place")
     a = p.parse_args(argv)
 
     try:
+        if a.cmd == "locate":
+            from . import geo
+            for hit in geo.locate(a.place):
+                print(f"  {hit['lat']}, {hit['lon']}   {hit['name']}")
+            return 0
         if a.cmd == "new":
             d = config.business_dir(a.slug)
             if os.path.exists(d):
@@ -113,6 +132,18 @@ def main(argv=None):
         cfg = config.load(a.slug)
         if a.cmd == "doctor":
             return cmd_doctor(cfg)
+        if a.cmd == "categories":
+            from .sources import overture
+            sc = cfg["sources"].get("overture")
+            if not sc:
+                sys.exit('Add "overture": {"around": [lat, lon, radius_m]} to sources in business.json first.')
+            _table([{"category": c, "places": n, "with_email": m} for c, n, m in overture.categories(sc, a.text)[:200]])
+            return 0
+        if a.cmd == "app":
+            from .server import serve
+            token = os.environ.get("LEADGEN_ADMIN_TOKEN", "")
+            serve(a.slug, "127.0.0.1", a.port, open_app=not token, home="app")
+            return 0
         store = Store(config.db_path(a.slug))
         if a.cmd == "collect":
             for name, mod in REGISTRY.items():
@@ -185,6 +216,6 @@ def main(argv=None):
         elif a.cmd == "serve":
             from .server import serve
             serve(a.slug, a.host, a.port)
-    except config.ConfigError as ex:
+    except (config.ConfigError, OSError, ValueError) as ex:
         sys.exit(str(ex))
     return 0

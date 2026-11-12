@@ -5,60 +5,276 @@
     "cta": "Can I drop off a free sample box this week so you can compare quality and price?"
   },
   "icp": {
-    "titles": ["Owner", "Chef", "Kitchen Manager", "Purchasing", "Food and Beverage", "Office Manager", "General Manager"],
-    "segments": [
-      {"name": "juice_bars", "weight": 30,
-       "keywords": ["juice", "smoothie", "acai", "juice_bar"],
-       "pitch": "Fruit is most of your cost of goods, so ripeness and price matter more to you than to anyone. We deliver ripe-to-blend fruit six mornings a week and credit anything that isn't usable."},
-      {"name": "hotels_catering", "weight": 25,
-       "keywords": ["hotel", "catering", "caterer", "banquet", "resort", "events"],
-       "pitch": "For breakfast buffets and event platters you need fruit that looks perfect on the day. We deliver cut-ready fruit six mornings a week and can scale up for events with 48 hours' notice."},
-      {"name": "grocers", "weight": 20,
-       "keywords": ["grocer", "greengrocer", "grocery", "market", "convenience", "deli", "bodega"],
-       "pitch": "We supply independent grocers with display-grade fruit in case or half-case quantities, so you can carry more variety without the waste."},
-      {"name": "cafes_bakeries", "weight": 20,
-       "keywords": ["cafe", "coffee", "bakery", "brunch", "ice_cream", "ice cream", "gelato", "dessert"],
-       "pitch": "A lot of cafes tell us they're stuck between supermarket runs and distributors with big minimums. We deliver small orders of fresh fruit six mornings a week, no minimum."},
-      {"name": "offices", "weight": 20,
-       "keywords": ["office", "coworking", "office manager", "workplace", "human resources"],
-       "pitch": "We run weekly fruit boxes for Austin offices: a simple, healthy perk priced per box, delivered Monday morning, pause any time."},
-      {"name": "restaurants", "weight": 15,
-       "keywords": ["restaurant", "bistro", "grill", "kitchen", "bar", "taqueria", "diner"],
-       "pitch": "We deliver fresh fruit for kitchens and bar programs six mornings a week, with no minimum order - useful as a main supplier or as a reliable backup."},
-      {"name": "schools_childcare", "weight": 15,
-       "keywords": ["school", "kindergarten", "daycare", "childcare", "preschool", "academy"],
-       "pitch": "We deliver ready-to-serve fruit for snack programs on a fixed weekly schedule, with simple invoicing."},
-      {"name": "gyms", "weight": 10,
-       "keywords": ["gym", "fitness", "yoga", "crossfit", "fitness_centre"],
-       "pitch": "A fruit bowl at the front desk is a cheap member perk. We deliver a weekly box sized to your traffic."}
+    "titles": [
+      "Owner",
+      "Chef",
+      "Kitchen Manager",
+      "Purchasing",
+      "Food and Beverage",
+      "Office Manager",
+      "General Manager"
     ],
-    "keywords_include": ["organic", "fresh", "healthy", "vegan", "breakfast", "farm"],
-    "keywords_exclude": ["wholesale produce", "produce distributor", "permanently closed", "farm stand"],
-    "locations": ["Austin", "Round Rock", "Cedar Park", "Pflugerville", "TX"],
-    "intent_phrases": ["produce supplier", "fruit supplier", "produce delivery", "fruit delivery", "wholesale fruit", "new supplier", "looking for a produce"]
+    "segments": [
+      {
+        "name": "juice_bars",
+        "weight": 30,
+        "keywords": [
+          "juice",
+          "smoothie",
+          "acai",
+          "juice_bar"
+        ],
+        "pitch": "Fruit is most of your cost of goods, so ripeness and price matter more to you than to anyone. We deliver ripe-to-blend fruit six mornings a week and credit anything that isn't usable."
+      },
+      {
+        "name": "hotels_catering",
+        "weight": 25,
+        "keywords": [
+          "hotel",
+          "catering",
+          "caterer",
+          "banquet",
+          "resort",
+          "events",
+          "bed and breakfast",
+          "motel"
+        ],
+        "pitch": "For breakfast buffets and event platters you need fruit that looks perfect on the day. We deliver cut-ready fruit six mornings a week and can scale up for events with 48 hours' notice."
+      },
+      {
+        "name": "grocers",
+        "weight": 20,
+        "keywords": [
+          "grocer",
+          "greengrocer",
+          "grocery",
+          "market",
+          "convenience",
+          "deli",
+          "bodega",
+          "health food"
+        ],
+        "pitch": "We supply independent grocers with display-grade fruit in case or half-case quantities, so you can carry more variety without the waste."
+      },
+      {
+        "name": "cafes_bakeries",
+        "weight": 20,
+        "keywords": [
+          "cafe",
+          "coffee",
+          "bakery",
+          "ice_cream",
+          "ice cream",
+          "gelato",
+          "dessert",
+          "bubble tea",
+          "frozen yogurt",
+          "donut",
+          "cupcake",
+          "shaved ice"
+        ],
+        "pitch": "A lot of cafes tell us they're stuck between supermarket runs and distributors with big minimums. We deliver small orders of fresh fruit six mornings a week, no minimum."
+      },
+      {
+        "name": "offices",
+        "weight": 20,
+        "keywords": [
+          "office",
+          "coworking",
+          "office manager",
+          "workplace",
+          "human resources"
+        ],
+        "pitch": "We run weekly fruit boxes for Austin offices: a simple, healthy perk priced per box, delivered Monday morning, pause any time."
+      },
+      {
+        "name": "restaurants",
+        "weight": 15,
+        "keywords": [
+          "restaurant",
+          "bistro",
+          "grill",
+          "kitchen",
+          "bar",
+          "taqueria",
+          "diner",
+          "salad bar",
+          "vegan",
+          "vegetarian",
+          "brunch",
+          "pancake"
+        ],
+        "pitch": "We deliver fresh fruit for kitchens and bar programs six mornings a week, with no minimum order - useful as a main supplier or as a reliable backup."
+      },
+      {
+        "name": "schools_childcare",
+        "weight": 15,
+        "keywords": [
+          "school",
+          "kindergarten",
+          "daycare",
+          "childcare",
+          "preschool",
+          "academy",
+          "day care",
+          "child care"
+        ],
+        "pitch": "We deliver ready-to-serve fruit for snack programs on a fixed weekly schedule, with simple invoicing."
+      },
+      {
+        "name": "gyms",
+        "weight": 10,
+        "keywords": [
+          "gym",
+          "fitness",
+          "yoga",
+          "crossfit",
+          "fitness_centre"
+        ],
+        "pitch": "A fruit bowl at the front desk is a cheap member perk. We deliver a weekly box sized to your traffic."
+      }
+    ],
+    "keywords_include": [
+      "organic",
+      "fresh",
+      "healthy",
+      "vegan",
+      "breakfast",
+      "farm"
+    ],
+    "keywords_exclude": [
+      "wholesale produce",
+      "produce distributor",
+      "permanently closed",
+      "farm stand"
+    ],
+    "locations": [
+      "Austin",
+      "Round Rock",
+      "Cedar Park",
+      "Pflugerville",
+      "TX"
+    ],
+    "intent_phrases": [
+      "produce supplier",
+      "fruit supplier",
+      "produce delivery",
+      "fruit delivery",
+      "wholesale fruit",
+      "new supplier",
+      "looking for a produce"
+    ]
   },
   "sources": {
+    "overture": {
+      "around": [
+        30.2672,
+        -97.7431,
+        20000
+      ],
+      "categories": [
+        "smoothie_juice_bar",
+        "acai_bowls",
+        "coffee_shop",
+        "cafe",
+        "bakery",
+        "bubble_tea_shop",
+        "ice_cream_shop",
+        "frozen_yogurt_shop",
+        "dessert_shop",
+        "caterer",
+        "hotel",
+        "bed_and_breakfast",
+        "grocery_store",
+        "health_food_store",
+        "organic_grocery_store",
+        "health_food_restaurant",
+        "salad_bar",
+        "vegan_restaurant",
+        "vegetarian_restaurant",
+        "breakfast_and_brunch_restaurant",
+        "cocktail_bar",
+        "preschool",
+        "day_care_preschool",
+        "child_care_and_day_care",
+        "coworking_space",
+        "gym"
+      ],
+      "min_confidence": 0.7,
+      "skip_chains": false,
+      "limit": 1500,
+      "per_category": 100
+    },
     "osm": {
       "area": "Austin",
-      "around": [30.2672, -97.7431, 20000],
-      "searches": ["amenity=juice_bar", "amenity=cafe", "amenity=restaurant", "amenity=ice_cream", "shop=greengrocer",
-                   "shop=bakery", "shop=convenience", "tourism=hotel", "craft=caterer", "amenity=kindergarten",
-                   "leisure=fitness_centre"],
+      "around": [
+        30.2672,
+        -97.7431,
+        20000
+      ],
+      "searches": [
+        "amenity=juice_bar",
+        "amenity=cafe",
+        "amenity=restaurant",
+        "amenity=ice_cream",
+        "shop=greengrocer",
+        "shop=bakery",
+        "shop=convenience",
+        "tourism=hotel",
+        "craft=caterer",
+        "amenity=kindergarten",
+        "leisure=fitness_centre"
+      ],
       "limit": 150,
       "skip_chains": true
     },
-    "places": {"queries": ["juice bar in Austin TX", "smoothie shop in Austin TX", "independent cafe in Austin TX",
-                           "caterer in Austin TX", "boutique hotel in Austin TX", "independent grocery store in Austin TX"],
-               "max_per_query": 40},
-    "apollo": {"titles": ["Office Manager", "Executive Chef", "Purchasing Manager", "Food and Beverage Director"],
-               "locations": ["Austin, Texas, United States"], "employee_ranges": ["11,200"], "pages": 2},
-    "reddit": {"subreddits": ["Austin", "restaurateur", "smallbusiness"],
-               "queries": ["produce supplier", "fruit supplier", "produce delivery"], "limit": 25}
+    "places": {
+      "queries": [
+        "juice bar in Austin TX",
+        "smoothie shop in Austin TX",
+        "independent cafe in Austin TX",
+        "caterer in Austin TX",
+        "boutique hotel in Austin TX",
+        "independent grocery store in Austin TX"
+      ],
+      "max_per_query": 40
+    },
+    "apollo": {
+      "titles": [
+        "Office Manager",
+        "Executive Chef",
+        "Purchasing Manager",
+        "Food and Beverage Director"
+      ],
+      "locations": [
+        "Austin, Texas, United States"
+      ],
+      "employee_ranges": [
+        "11,200"
+      ],
+      "pages": 2
+    },
+    "reddit": {
+      "subreddits": [
+        "Austin",
+        "restaurateur",
+        "smallbusiness"
+      ],
+      "queries": [
+        "produce supplier",
+        "fruit supplier",
+        "produce delivery"
+      ],
+      "limit": 25
+    }
   },
   "scoring": {},
   "outreach": {
     "sender": "Maya, Sunny Orchard Fruit Supply",
-    "followup_days": [3, 7],
+    "followup_days": [
+      3,
+      7
+    ],
     "templates": {
       "email": "Subject: Fresh fruit for {company} - free sample box?\n\nHi {first_name},\n\n{pitch}\n\n{cta}\n\n{sender}\n\n(Not relevant? Reply 'stop' and I won't contact you again.)",
       "call": "Call script for {company}:\n1. \"Hi, this is {sender}. Who looks after your fruit and produce ordering?\"\n2. \"{pitch}\"\n3. \"{cta}\"\nIf busy: ask the best time to call back and the buyer's name/email. Avoid 11am-2pm and 5-8pm (service hours)."
@@ -67,7 +283,11 @@
   "landing": {
     "headline": "Fresh fruit delivered to your business, six mornings a week",
     "subhead": "No minimum order. Credit for anything below standard. Serving Austin cafes, juice bars, restaurants, hotels and offices.",
-    "bullets": ["Free sample box before you commit", "Order by 8pm for next-morning delivery", "Case, half-case or mixed boxes"],
+    "bullets": [
+      "Free sample box before you commit",
+      "Order by 8pm for next-morning delivery",
+      "Case, half-case or mixed boxes"
+    ],
     "button": "Get my free sample box",
     "consent": "By submitting you agree to be contacted about this request.",
     "thanks": "Thanks - we'll call you within one business day to arrange your sample box."
